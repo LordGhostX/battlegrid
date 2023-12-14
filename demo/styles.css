@@ -165,3 +165,14 @@ body {
          height: 35px;
      }
  }
+
+ @media (max-width:410px){
+    .grid {
+         grid-template-columns: 20px repeat(11, 30px);
+         grid-template-rows: 20px repeat(11, 30px);
+     }
+     .cell{
+         width: 30px;
+         height: 30px;
+     }
+ }
