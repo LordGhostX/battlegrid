@@ -13,6 +13,7 @@ Live preview: <https://lordghostx.github.io/battlegrid/demo/>
 ## Functionality
 
 - **Undo Move**: Reverts the last move(s) made by any player
+- **Skip Turn**: Enables players to skip their turn if desired
 - **Export Moves**: Generates a custom [PGN format](https://en.wikipedia.org/wiki/Portable_Game_Notation) string representing the current gameplay
 - **Import Moves**: Imports gameplay from a string provided by the **Export Moves** function
 - **Restart Game**: Resets the entire gameplay. To preserve your progress, use the **Export Moves** function beforehand
