@@ -5,6 +5,8 @@ const blackPiecesOrder = ["♟", "♜", "♞", "◉", "♝", "♛", "♚", "♛"
 // Game state
 let selectedCell = null;
 let moveHistory = [];
+// Since white is supposed to move first
+let lastMovedPiece = 'black';
 
 // Utility functions
 const createLabelCell = (text) => {
@@ -17,6 +19,7 @@ const createLabelCell = (text) => {
 const createPiece = (icon, color) => {
     const piece = document.createElement("span");
     piece.className = `piece ${color}`;
+    piece.setAttribute('pieceType', color)
     piece.textContent = icon;
     return piece;
 };
@@ -37,6 +40,7 @@ function undoMove() {
         if (lastMove.capturedPiece) {
             lastMove.to.appendChild(lastMove.capturedPiece);
         }
+        lastMovedPiece = lastMove.movedPiece.getAttribute('piecetype') === 'white' ?  'black' : 'white';
     }
 }
 
@@ -119,8 +123,12 @@ function handleImportClick() {
 function onCellClick(event) {
     const cell = event.currentTarget;
 
+
     if (selectedCell && selectedCell !== cell) {
         const pieceToMove = selectedCell.querySelector(".piece");
+        // Check if it the pieces turn to move
+        if (pieceToMove.getAttribute('piecetype') === lastMovedPiece) return;
+
         if (pieceToMove) {
             const capturedPiece = cell.querySelector(".piece");
             if (capturedPiece) {
@@ -144,11 +152,19 @@ function onCellClick(event) {
 
             selectedCell.classList.remove("selected");
             selectedCell = null;
+            lastMovedPiece = pieceToMove.getAttribute('piecetype')
         }
     } else if (cell.querySelector(".piece")) {
+
         if (selectedCell) {
             selectedCell.classList.remove("selected");
         }
+        /**
+         * Check if it's the piece turn
+         * Don't add css class to the piece but remove selected piece one
+        */
+        const piece = cell.querySelector('.piece');
+        if (piece.getAttribute('piecetype') === lastMovedPiece) return;
         cell.classList.add("selected");
         selectedCell = cell;
     }
