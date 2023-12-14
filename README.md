@@ -39,6 +39,7 @@ Live preview: <https://lordghostx.github.io/battlegrid/demo/>
 
 - Newly introduced piece, taking inspiration from a mini-queen (princess)
 - Can advance and capture two squares in any direction (vertical, horizontal, diagonal), with a fixed range of 2 squares
+- Can also leap over units like **Ghost (♘ ♞)**
 
 #### Drone (♗ ♝)
 

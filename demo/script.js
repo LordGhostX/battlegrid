@@ -5,6 +5,7 @@ const blackPiecesOrder = ["♟", "♜", "♞", "◉", "♝", "♛", "♚", "♛"
 // Game state
 let selectedCell = null;
 let moveHistory = [];
+let lastMovedPiece = "black";
 
 // Utility functions
 const createLabelCell = (text) => {
@@ -17,6 +18,7 @@ const createLabelCell = (text) => {
 const createPiece = (icon, color) => {
     const piece = document.createElement("span");
     piece.className = `piece ${color}`;
+    piece.setAttribute("pieceType", color);
     piece.textContent = icon;
     return piece;
 };
@@ -25,6 +27,7 @@ function resetGameState() {
     // Clear the move history, selected cell, and grid
     moveHistory = [];
     selectedCell = null;
+    lastMovedPiece = "black";
     document.getElementById("grid").innerHTML = "";
 
     initializeBoard();
@@ -37,6 +40,7 @@ function undoMove() {
         if (lastMove.capturedPiece) {
             lastMove.to.appendChild(lastMove.capturedPiece);
         }
+        lastMovedPiece = lastMove.movedPiece.getAttribute("pieceType") === "white" ?  "black" : "white";
     }
 }
 
@@ -92,8 +96,10 @@ function importMoves(importString) {
         // Move the piece to the new cell
         let pieceElement = fromCell.querySelector(".piece");
         if (!pieceElement) {
+            let color = whitePiecesOrder.includes(movedPiece) ?  "white" : "black";
             pieceElement = document.createElement("span");
-            pieceElement.className = "piece";
+            pieceElement.className = `piece ${color}`;
+            pieceElement.setAttribute("pieceType", color);
             pieceElement.textContent = movedPiece;
         }
         toCell.appendChild(pieceElement);
@@ -105,6 +111,7 @@ function importMoves(importString) {
             movedPiece: pieceElement,
             capturedPiece: capturedPieceElement
         });
+        lastMovedPiece = pieceElement.getAttribute("pieceType");
     });
 }
 
@@ -144,11 +151,16 @@ function onCellClick(event) {
 
             selectedCell.classList.remove("selected");
             selectedCell = null;
+            lastMovedPiece = pieceToMove.getAttribute("pieceType");
         }
     } else if (cell.querySelector(".piece")) {
+        const piece = cell.querySelector(".piece");
+        if (piece.getAttribute("pieceType") === lastMovedPiece) return;
+
         if (selectedCell) {
             selectedCell.classList.remove("selected");
         }
+
         cell.classList.add("selected");
         selectedCell = cell;
     }
