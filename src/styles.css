@@ -1,0 +1,99 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 30px repeat(11, 60px);
+    grid-template-rows: 30px repeat(11, 60px);
+    border: 3px solid #000;
+    background-color: #000;
+}
+
+.label, .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: -1px;
+    border: 1px solid transparent;
+}
+
+.label {
+    color: #fff;
+    width: 30px;
+    height: 30px;
+}
+
+.cell {
+    background-color: #fff;
+    width: 60px;
+    height: 60px;
+}
+
+.dark-square {
+    background-color: #4cac78;
+}
+
+#cell-F6 {
+    background-image: radial-gradient(circle at center, #fff 25%, transparent 25%, transparent 65%, #fff 65%);
+    background-color: #4cac78;
+}
+
+.piece {
+    font-size: 32px;
+}
+
+.selected {
+    box-shadow: 0 0 0 2px #ff0 inset;
+    position: relative;
+}
+
+.selected::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    box-shadow: 0 0 10px #ff0;
+    pointer-events: none;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.button:focus {
+    outline: none;
+}
