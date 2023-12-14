@@ -5,8 +5,7 @@ const blackPiecesOrder = ["♟", "♜", "♞", "◉", "♝", "♛", "♚", "♛"
 // Game state
 let selectedCell = null;
 let moveHistory = [];
-// Since white is supposed to move first
-let lastMovedPiece = 'black';
+let lastMovedPiece = "black";
 
 // Utility functions
 const createLabelCell = (text) => {
@@ -19,7 +18,7 @@ const createLabelCell = (text) => {
 const createPiece = (icon, color) => {
     const piece = document.createElement("span");
     piece.className = `piece ${color}`;
-    piece.setAttribute('pieceType', color)
+    piece.setAttribute("pieceType", color);
     piece.textContent = icon;
     return piece;
 };
@@ -28,6 +27,7 @@ function resetGameState() {
     // Clear the move history, selected cell, and grid
     moveHistory = [];
     selectedCell = null;
+    lastMovedPiece = "black";
     document.getElementById("grid").innerHTML = "";
 
     initializeBoard();
@@ -40,7 +40,7 @@ function undoMove() {
         if (lastMove.capturedPiece) {
             lastMove.to.appendChild(lastMove.capturedPiece);
         }
-        lastMovedPiece = lastMove.movedPiece.getAttribute('piecetype') === 'white' ?  'black' : 'white';
+        lastMovedPiece = lastMove.movedPiece.getAttribute("pieceType") === "white" ?  "black" : "white";
     }
 }
 
@@ -96,8 +96,10 @@ function importMoves(importString) {
         // Move the piece to the new cell
         let pieceElement = fromCell.querySelector(".piece");
         if (!pieceElement) {
+            let color = whitePiecesOrder.includes(movedPiece) ?  "white" : "black";
             pieceElement = document.createElement("span");
-            pieceElement.className = "piece";
+            pieceElement.className = `piece ${color}`;
+            pieceElement.setAttribute("pieceType", color);
             pieceElement.textContent = movedPiece;
         }
         toCell.appendChild(pieceElement);
@@ -109,6 +111,7 @@ function importMoves(importString) {
             movedPiece: pieceElement,
             capturedPiece: capturedPieceElement
         });
+        lastMovedPiece = pieceElement.getAttribute("pieceType");
     });
 }
 
@@ -123,12 +126,8 @@ function handleImportClick() {
 function onCellClick(event) {
     const cell = event.currentTarget;
 
-
     if (selectedCell && selectedCell !== cell) {
         const pieceToMove = selectedCell.querySelector(".piece");
-        // Check if it the pieces turn to move
-        if (pieceToMove.getAttribute('piecetype') === lastMovedPiece) return;
-
         if (pieceToMove) {
             const capturedPiece = cell.querySelector(".piece");
             if (capturedPiece) {
@@ -152,19 +151,16 @@ function onCellClick(event) {
 
             selectedCell.classList.remove("selected");
             selectedCell = null;
-            lastMovedPiece = pieceToMove.getAttribute('piecetype')
+            lastMovedPiece = pieceToMove.getAttribute("pieceType");
         }
     } else if (cell.querySelector(".piece")) {
+        const piece = cell.querySelector(".piece");
+        if (piece.getAttribute("pieceType") === lastMovedPiece) return;
 
         if (selectedCell) {
             selectedCell.classList.remove("selected");
         }
-        /**
-         * Check if it's the piece turn
-         * Don't add css class to the piece but remove selected piece one
-        */
-        const piece = cell.querySelector('.piece');
-        if (piece.getAttribute('piecetype') === lastMovedPiece) return;
+
         cell.classList.add("selected");
         selectedCell = cell;
     }
