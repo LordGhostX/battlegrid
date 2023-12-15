@@ -97,3 +97,13 @@ body {
 .button:focus {
     outline: none;
 }
+
+.positive-highlight {
+    background-color: greenyellow;
+    box-shadow: 0 0 10px #ff0;
+}
+
+.capture-highlight {
+    background-color: red;
+    box-shadow: 0 0 10px #ff0;
+}

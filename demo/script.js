@@ -2,6 +2,7 @@
 let selectedCell = null;
 let moveHistory = [];
 let lastMovedPiece = "black";
+let legalMoves = [];
 
 // Utility functions
 const createLabelCell = (text) => {
@@ -11,10 +12,12 @@ const createLabelCell = (text) => {
   return labelCell;
 };
 
-const createPiece = (icon, color) => {
+const createPiece = (icon, color, location, name) => {
   const piece = document.createElement("span");
   piece.className = `piece ${color}`;
   piece.setAttribute("pieceType", color);
+  piece.setAttribute("name", name);
+  piece.setAttribute("location", location);
   piece.textContent = icon;
   return piece;
 };
@@ -113,7 +116,16 @@ function onCellClick(event) {
   const cell = event.currentTarget;
 
   if (selectedCell && selectedCell !== cell) {
+    // Move isn't legal but deselect state
+    if (!isMoveLegal(cell.id)) {
+      selectedCell.classList.remove("selected");
+      selectedCell = null;
+      legalMoves = [];
+      clearHighlights();
+    }
+
     const pieceToMove = selectedCell.querySelector(".piece");
+
     if (pieceToMove) {
       const capturedPiece = cell.querySelector(".piece");
       if (capturedPiece) {
@@ -124,9 +136,14 @@ function onCellClick(event) {
           return;
         }
         cell.removeChild(capturedPiece);
+        colPerPiece[cell.id] = null;
       }
 
       cell.appendChild(pieceToMove);
+
+      // Update Cellid to cell reference
+      colPerPiece[selectedCell.id] = null;
+      colPerPiece[cell.id] = cell;
 
       moveHistory.push({
         from: selectedCell,
@@ -138,6 +155,7 @@ function onCellClick(event) {
       selectedCell.classList.remove("selected");
       selectedCell = null;
       lastMovedPiece = pieceToMove.getAttribute("pieceType");
+      clearHighlights();
     }
   } else if (cell.querySelector(".piece")) {
     const piece = cell.querySelector(".piece");
@@ -149,12 +167,7 @@ function onCellClick(event) {
 
     cell.classList.add("selected");
     selectedCell = cell;
-  } else if (cell.querySelector(".piece")) {
-    if (selectedCell) {
-      selectedCell.classList.remove("selected");
-    }
-    cell.classList.add("selected");
-    selectedCell = cell;
+    suggestMoves(cell);
   }
 }
 
@@ -176,15 +189,17 @@ const initializeBoard = () => {
       const cell = document.createElement("div");
       cell.className = "cell";
       cell.id = `cell-${String.fromCharCode("A".charCodeAt(0) + col - 1)}${row}`;
+      // Update ColPerPiece CellId
+      colPerPiece[cell.id] = cell;
 
       if (row === 1 || row === 11) {
         const color = row === 1 ? "black" : "white";
         const icons = row === 1 ? blackPiecesOrder : whitePiecesOrder;
-        cell.appendChild(createPiece(icons[col].icon, color));
+        cell.appendChild(createPiece(icons[col].icon, color, cell.id, icons[col].name));
       } else if (row === 2 || row === 10) {
         const color = row === 2 ? "black" : "white";
         const icons = row === 2 ? blackPiecesOrder : whitePiecesOrder;
-        cell.appendChild(createPiece(icons[0].icon, color));
+        cell.appendChild(createPiece(icons[0].icon, color, cell.id, icons[0].name));
       }
 
       if (row % 2 == col % 2) {
