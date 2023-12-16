@@ -1,8 +1,5 @@
 let colPerPiece = {};
-// Columns 'A' to 'K'
 const columns = "ABCDEFGHIJK".split("");
-
-// Rows 1 to 11
 for (let col of columns) {
   for (let row = 1; row <= 11; row++) {
     const cellId = `cell-${col}${row}`;
@@ -15,13 +12,18 @@ function suggestMoves(cell) {
   const piece = cell.querySelector(".piece");
   const pieceType = piece.getAttribute("pieceType");
   const name = piece.getAttribute("name");
-
+  let moves;
   switch (name) {
+
     case INFANTRY:
-      const moves = getInfantryMoves(cell.id, pieceType);
+      moves = getInfantryMoves(cell.id, pieceType);
       legalMoves = moves;
       highlightSquares(moves);
       break;
+    case TANK:
+      moves = getTankMoves(cell.id)
+      legalMoves = moves;
+      highlightSquares(moves);
     default:
       console.log("Not Implemented");
   }
@@ -31,8 +33,8 @@ function getInfantryMoves(currentCell, pieceColor) {
   const moves = [];
 
   // Extract the column and row from the current cell
-  const column = currentCell.charAt(5); // 'A'
-  const row = parseInt(currentCell.slice(6)); // 2
+  const column = currentCell.charAt(5); 
+  const row = parseInt(currentCell.slice(6)); 
 
   // Determine the direction of movement based on the piece color
   const direction = pieceColor === "black" ? 1 : -1;
@@ -46,7 +48,6 @@ function getInfantryMoves(currentCell, pieceColor) {
   }
 
   // Diagonal captures (up to 2 squares)
-  // Using ASCII values to calculate neighboring columns
   const columnCharCode = column.charCodeAt(0);
   for (let i = 1; i <= 2; i++) {
     const newRow = row + i * direction;
@@ -66,6 +67,34 @@ function getInfantryMoves(currentCell, pieceColor) {
 
   return moves;
 }
+
+function getTankMoves(currentCell) {
+  const moves = [];
+  const currentColumn = currentCell.charAt(5);
+  const currentRow = parseInt(currentCell.slice(6)); 
+
+  const columns = 'ABCDEFGHIJK'.split('');
+  const rows = Array.from({ length: 11 }, (_, i) => i + 1);
+
+
+  columns.forEach(col => {
+      if (col !== currentColumn) {
+          moves.push(`cell-${col}${currentRow}`);
+      }
+  });
+
+  // Vertical moves (all cells in the same column)
+  rows.forEach(row => {
+      if (row !== currentRow) {
+          moves.push(`cell-${currentColumn}${row}`);
+      }
+  });
+
+  return moves;
+}
+
+
+
 
 function highlightSquares(cellIds) {
   console.log(cellIds);
