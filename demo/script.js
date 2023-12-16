@@ -111,6 +111,14 @@ function handleImportClick() {
   }
 }
 
+function handleSkipClick() {
+  lastMovedPiece = lastMovedPiece === "white" ? "black" : "white";
+  if (selectedCell) {
+    selectedCell.classList.remove("selected");
+    selectedCell = null;
+  }
+}
+
 // Event handlers
 function onCellClick(event) {
   const cell = event.currentTarget;
@@ -229,6 +237,9 @@ const initializeBoard = () => {
 
   const importButton = document.getElementById("import");
   importButton.addEventListener("click", handleImportClick);
+
+  const skipButton = document.getElementById("skip");
+  skipButton.addEventListener("click", handleSkipClick);
 };
 
 // When the DOM is fully loaded, initialize the game board
