@@ -14,16 +14,21 @@ function suggestMoves(cell) {
   const name = piece.getAttribute("name");
   let moves;
   switch (name) {
-
     case INFANTRY:
       moves = getInfantryMoves(cell.id, pieceType);
       legalMoves = moves;
       highlightSquares(moves);
       break;
     case TANK:
-      moves = getTankMoves(cell.id)
+      moves = getTankMoves(cell.id);
       legalMoves = moves;
       highlightSquares(moves);
+      break;
+    case GHOST:
+      moves = getGhostMoves(cell.id);
+      legalMoves = moves;
+      highlightSquares(moves);
+      break;
     default:
       console.log("Not Implemented");
   }
@@ -33,8 +38,8 @@ function getInfantryMoves(currentCell, pieceColor) {
   const moves = [];
 
   // Extract the column and row from the current cell
-  const column = currentCell.charAt(5); 
-  const row = parseInt(currentCell.slice(6)); 
+  const column = currentCell.charAt(5);
+  const row = parseInt(currentCell.slice(6));
 
   // Determine the direction of movement based on the piece color
   const direction = pieceColor === "black" ? 1 : -1;
@@ -73,37 +78,81 @@ function getTankMoves(currentCell) {
   const moves = [];
   const currentColumn = currentCell.charAt(5);
   const currentRow = parseInt(currentCell.slice(6));
-  const cell =  document.querySelector(`#${currentCell}`);
-  const currentCellPiece = cell.querySelector('.piece');
+  const cell = document.querySelector(`#${currentCell}`);
+  const currentCellPiece = cell.querySelector(".piece");
 
-
-  const columns = 'ABCDEFGHIJK'.split('');
+  const columns = "ABCDEFGHIJK".split("");
   const rows = Array.from({ length: 11 }, (_, i) => i + 1);
 
-
-  columns.forEach(col => {
-      if (col !== currentColumn) {
-        const id = `cell-${col}${currentRow}`;
-        const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute('pieceType'));
-        if (cellShouldBeAdded) moves.push(`cell-${col}${currentRow}`);
-      }
+  columns.forEach((col) => {
+    if (col !== currentColumn) {
+      const id = `cell-${col}${currentRow}`;
+      const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute("pieceType"));
+      if (cellShouldBeAdded) moves.push(`cell-${col}${currentRow}`);
+    }
   });
 
   // Vertical moves (all cells in the same column)
-  rows.forEach(row => {
-      if (row !== currentRow) {
-        const id = `cell-${currentColumn}${row}`;
-        const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute('pieceType'));
-        if (cellShouldBeAdded) moves.push(`cell-${currentColumn}${row}`);
-      }
+  rows.forEach((row) => {
+    if (row !== currentRow) {
+      const id = `cell-${currentColumn}${row}`;
+      const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute("pieceType"));
+      if (cellShouldBeAdded) moves.push(`cell-${currentColumn}${row}`);
+    }
   });
 
   return moves;
 }
 
+function getGhostMoves(currentCell) {
+  const moves = [];
+  const currentColumn = currentCell.charAt(5);
+  const currentRow = parseInt(currentCell.slice(6));
+  const cell = document.querySelector(`#${currentCell}`);
+  const currentCellPiece = cell.querySelector(".piece");
 
+  const columns = "ABCDEFGHIJK".split("");
+  const rows = Array.from({ length: 11 }, (_, i) => i + 1);
 
+  // Define possible moves for the custom piece
+  const ghostMoves = [
+    { col: 2, row: 1 },
+    { col: 1, row: 2 },
+    { col: -1, row: 2 },
+    { col: -2, row: 1 },
+    { col: -2, row: -1 },
+    { col: -1, row: -2 },
+    { col: 1, row: -2 },
+    { col: 2, row: -1 },
+    { col: 3, row: 1 },
+    { col: 3, row: -1 },
+  ];
 
+  columns.forEach((col) => {
+    rows.forEach((row) => {
+      if (!(col === currentColumn && row === currentRow)) {
+        const id = `cell-${col}${row}`;
+        const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute("pieceType"));
+
+        // Check if the cell is a valid move for the custom piece
+        for (const move of ghostMoves) {
+          const targetCol = currentColumn.charCodeAt(0) + move.col;
+          const targetRow = currentRow + move.row;
+
+          if (col.charCodeAt(0) === targetCol && row === targetRow && cellShouldBeAdded) {
+            moves.push(`cell-${col}${row}`);
+          }
+        }
+      }
+    });
+  });
+  console.log(moves);
+  return moves;
+}
+
+/**
+ * utils functions
+ **/
 function highlightSquares(cellIds) {
   cellIds.forEach((cellId) => {
     const cell = document.getElementById(cellId);
@@ -137,20 +186,24 @@ function checkIfCellContainsAPiece(id) {
 }
 
 function checkIfCellShouldBeActive(id, type) {
-  const piece = colPerPiece[id].querySelector(".piece");
-  console.log(piece, id, type);
-  if (piece) {
-    if (piece.getAttribute('pieceType') === type) {
-      return false;
+  try {
+    const piece = colPerPiece[id].querySelector(".piece");
+    console.log(piece, id, type);
+    if (piece) {
+      if (piece.getAttribute("pieceType") === type) {
+        return false;
+      }
     }
-  }
 
-  return true;
+    return true;
+  } catch (e) {
+    return true;
+  }
 }
 
 /**
  * Check if the move if legal from the moves piece is allowed to move
- * @param {*} cellId 
+ * @param {*} cellId
  */
 function isMoveLegal(cellId) {
   if (legalMoves.includes(cellId)) {
