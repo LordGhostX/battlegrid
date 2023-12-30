@@ -104,6 +104,15 @@ body {
     outline: none;
 }
 
+.positive-highlight {
+    background-color: rgb(130, 190, 40);
+    box-shadow: 0 0 10px #ff0;
+}
+
+.capture-highlight {
+    background-color: rgb(175, 21, 21);
+    box-shadow: 0 0 10px #ff0;
+}
 @media (max-width:720px){
     .center-container{
         width: 95%;
