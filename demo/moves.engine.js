@@ -69,9 +69,13 @@ function getInfantryMoves(currentCell, pieceColor) {
 }
 
 function getTankMoves(currentCell) {
+  console.log(currentCell);
   const moves = [];
   const currentColumn = currentCell.charAt(5);
-  const currentRow = parseInt(currentCell.slice(6)); 
+  const currentRow = parseInt(currentCell.slice(6));
+  const cell =  document.querySelector(`#${currentCell}`);
+  const currentCellPiece = cell.querySelector('.piece');
+
 
   const columns = 'ABCDEFGHIJK'.split('');
   const rows = Array.from({ length: 11 }, (_, i) => i + 1);
@@ -79,14 +83,18 @@ function getTankMoves(currentCell) {
 
   columns.forEach(col => {
       if (col !== currentColumn) {
-          moves.push(`cell-${col}${currentRow}`);
+        const id = `cell-${col}${currentRow}`;
+        const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute('pieceType'));
+        if (cellShouldBeAdded) moves.push(`cell-${col}${currentRow}`);
       }
   });
 
   // Vertical moves (all cells in the same column)
   rows.forEach(row => {
       if (row !== currentRow) {
-          moves.push(`cell-${currentColumn}${row}`);
+        const id = `cell-${currentColumn}${row}`;
+        const cellShouldBeAdded = checkIfCellShouldBeActive(id, currentCellPiece.getAttribute('pieceType'));
+        if (cellShouldBeAdded) moves.push(`cell-${currentColumn}${row}`);
       }
   });
 
@@ -97,7 +105,6 @@ function getTankMoves(currentCell) {
 
 
 function highlightSquares(cellIds) {
-  console.log(cellIds);
   cellIds.forEach((cellId) => {
     const cell = document.getElementById(cellId);
     if (cell) {
@@ -127,6 +134,18 @@ function checkIfCellContainsAPiece(id) {
   }
 
   return false;
+}
+
+function checkIfCellShouldBeActive(id, type) {
+  const piece = colPerPiece[id].querySelector(".piece");
+  console.log(piece, id, type);
+  if (piece) {
+    if (piece.getAttribute('pieceType') === type) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**
